@@ -17,7 +17,13 @@ public class LessonsController : ControllerBase
         _lessonService = lessonService;
     }
 
+    /// <summary>
+    /// Retrieves all active lessons for a specific course.
+    /// </summary>
+    /// <param name="courseId">The unique identifier of the course.</param>
+    /// <returns>A list of lessons.</returns>
     [HttpGet("course/{courseId}")]
+    [ProducesResponseType(typeof(IEnumerable<LessonDto>), 200)]
     public async Task<IActionResult> GetByCourse(Guid courseId)
     {
         try
@@ -31,7 +37,15 @@ public class LessonsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Creates a new lesson for a specific course.
+    /// </summary>
+    /// <param name="courseId">The unique identifier of the course.</param>
+    /// <param name="request">Lesson creation details including Title and Order.</param>
+    /// <returns>The created lesson details.</returns>
     [HttpPost("course/{courseId}")]
+    [ProducesResponseType(typeof(LessonDto), 201)]
+    [ProducesResponseType(400)]
     public async Task<IActionResult> Create(Guid courseId, [FromBody] CreateLessonRequest request)
     {
         try
@@ -45,7 +59,16 @@ public class LessonsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Updates an existing lesson's details.
+    /// </summary>
+    /// <param name="id">The unique identifier of the lesson.</param>
+    /// <param name="request">Updated lesson details.</param>
+    /// <returns>The updated lesson details.</returns>
     [HttpPut("{id}")]
+    [ProducesResponseType(typeof(LessonDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateLessonRequest request)
     {
         try
@@ -59,7 +82,15 @@ public class LessonsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Soft deletes a lesson.
+    /// </summary>
+    /// <param name="id">The unique identifier of the lesson.</param>
+    /// <returns>Success message.</returns>
     [HttpDelete("{id}")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
@@ -73,7 +104,15 @@ public class LessonsController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Reorders multiple lessons within a course.
+    /// </summary>
+    /// <param name="courseId">The unique identifier of the course.</param>
+    /// <param name="request">List of lesson IDs and their new absolute orders.</param>
+    /// <returns>Success message.</returns>
     [HttpPost("course/{courseId}/reorder")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
     public async Task<IActionResult> Reorder(Guid courseId, [FromBody] ReorderLessonsRequest request)
     {
         try

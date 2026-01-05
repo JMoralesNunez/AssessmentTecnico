@@ -12,5 +12,11 @@ public record LoginRequest(
 
 public record AuthResponse(
     string Token,
+    string RefreshToken,
     string Email
+);
+
+public record RefreshTokenRequest(
+    string Token,
+    string RefreshToken
 );

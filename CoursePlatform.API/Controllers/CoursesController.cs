@@ -17,7 +17,16 @@ public class CoursesController : ControllerBase
         _courseService = courseService;
     }
 
+    /// <summary>
+    /// Searches for courses based on query and status.
+    /// </summary>
+    /// <param name="q">Search query for title.</param>
+    /// <param name="status">Filter by course status (Draft, Published).</param>
+    /// <param name="page">Page number.</param>
+    /// <param name="pageSize">Items per page.</param>
+    /// <returns>Paginated search results.</returns>
     [HttpGet("search")]
+    [ProducesResponseType(typeof(CourseSearchResponse), 200)]
     public async Task<IActionResult> Search([FromQuery] string? q, [FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         try
@@ -38,7 +47,14 @@ public class CoursesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Retrieves a summary of a specific course.
+    /// </summary>
+    /// <param name="id">The unique identifier of the course.</param>
+    /// <returns>Course summary details.</returns>
     [HttpGet("{id}/summary")]
+    [ProducesResponseType(typeof(CourseDetailDto), 200)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> GetSummary(Guid id)
     {
         try
@@ -56,7 +72,14 @@ public class CoursesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Publishes a course if it has at least one active lesson.
+    /// </summary>
+    /// <param name="id">The unique identifier of the course.</param>
+    /// <returns>Success message.</returns>
     [HttpPatch("{id}/publish")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
     public async Task<IActionResult> Publish(Guid id)
     {
         try
@@ -70,7 +93,14 @@ public class CoursesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Reverts a published course back to draft status.
+    /// </summary>
+    /// <param name="id">The unique identifier of the course.</param>
+    /// <returns>Success message.</returns>
     [HttpPatch("{id}/unpublish")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
     public async Task<IActionResult> Unpublish(Guid id)
     {
         try
@@ -84,7 +114,14 @@ public class CoursesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Creates a new course in Draft status.
+    /// </summary>
+    /// <param name="request">Course creation details.</param>
+    /// <returns>The created course summary.</returns>
     [HttpPost]
+    [ProducesResponseType(typeof(CourseSummaryDto), 201)]
+    [ProducesResponseType(400)]
     public async Task<IActionResult> Create([FromBody] CreateCourseRequest request)
     {
         try
@@ -98,7 +135,16 @@ public class CoursesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Updates the details of an existing course.
+    /// </summary>
+    /// <param name="id">The unique identifier of the course.</param>
+    /// <param name="request">Updated course details.</param>
+    /// <returns>The updated course summary.</returns>
     [HttpPut("{id}")]
+    [ProducesResponseType(typeof(CourseSummaryDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCourseRequest request)
     {
         try
@@ -112,7 +158,15 @@ public class CoursesController : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Soft deletes a course by marking it as deleted.
+    /// </summary>
+    /// <param name="id">The unique identifier of the course.</param>
+    /// <returns>Success message.</returns>
     [HttpDelete("{id}")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> Delete(Guid id)
     {
         try

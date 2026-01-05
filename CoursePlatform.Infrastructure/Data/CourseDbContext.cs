@@ -14,6 +14,7 @@ public class CourseDbContext : IdentityDbContext<IdentityUser>, IUnitOfWork
 
     public DbSet<Course> Courses { get; set; }
     public DbSet<Lesson> Lessons { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
