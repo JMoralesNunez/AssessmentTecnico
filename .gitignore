@@ -1,0 +1,14 @@
+# .env file contains sensitive secrets
+.env
+
+# .NET artifacts
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE artifacts
+.vscode/
+.idea/
