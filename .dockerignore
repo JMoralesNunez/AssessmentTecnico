@@ -1,0 +1,15 @@
+**/*.env
+**/*.user
+**/*.suo
+**/bin
+**/obj
+**/.git
+**/.vscode
+**/.idea
+.dockerignore
+Dockerfile
+**/appsettings.Development.json
+brain/
+walkthrough.md
+task.md
+implementation_plan.md

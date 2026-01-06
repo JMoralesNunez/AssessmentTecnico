@@ -3,6 +3,20 @@
 ## Descripción
 Este proyecto es una API robusta para la gestión de cursos y lecciones, construida siguiendo los principios de **Arquitectura Hexagonal** (Clean Architecture). La API implementa funcionalidades avanzadas de autenticación mediante JWT y Refresh Tokens, gestión de contenidos (CRUD), y documentación interactiva con Swagger.
 
+## Docker
+
+El proyecto incluye un `Dockerfile` para facilitar su despliegue en contenedores.
+
+### Construir la imagen
+```bash
+docker build -t course-platform-api .
+```
+
+### Ejecutar el contenedor
+```bash
+docker run -d -p 8080:8080 --name course-api --env-file CoursePlatform.API/.env course-platform-api
+```
+
 ## Características Principales
 - **Arquitectura Hexagonal**: Separación clara de responsabilidades entre Dominio, Aplicación, Infraestructura y API.
 - **Autenticación Segura**: Implementación de JWT con tokens de acceso de corta duración y Refresh Tokens persistidos.
