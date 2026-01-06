@@ -86,17 +86,44 @@ public class LessonService : ILessonService
             throw new Exception("Duplicate orders found in reorder request.");
         }
 
-        foreach (var orderUpdate in request.Orders)
+        // Use a transaction to ensure atomic reordering
+        await using var transaction = await _courseRepository.UnitOfWork.BeginTransactionAsync();
+        try
         {
-            var lesson = course.Lessons.FirstOrDefault(l => l.Id == orderUpdate.LessonId);
-            if (lesson != null)
+            foreach (var orderUpdate in request.Orders)
             {
-                lesson.Order = orderUpdate.NewOrder;
-                lesson.UpdatedAt = DateTime.UtcNow;
+                var lesson = course.Lessons.FirstOrDefault(l => l.Id == orderUpdate.LessonId);
+                if (lesson != null)
+                {
+                    // Step 1: Set temporary negative order to avoid unique constraint violation
+                    lesson.Order = -10000 - orderUpdate.NewOrder;
+                    lesson.UpdatedAt = DateTime.UtcNow;
+                }
             }
-        }
 
-        await _courseRepository.UnitOfWork.SaveChangesAsync();
+            // Save changes to apply temporary orders
+            await _courseRepository.UnitOfWork.SaveChangesAsync();
+
+            foreach (var orderUpdate in request.Orders)
+            {
+                var lesson = course.Lessons.FirstOrDefault(l => l.Id == orderUpdate.LessonId);
+                if (lesson != null)
+                {
+                    // Step 2: Set final requested order
+                    lesson.Order = orderUpdate.NewOrder;
+                    lesson.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+
+            // Save final orders and commit transaction
+            await _courseRepository.UnitOfWork.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<IEnumerable<LessonDto>> GetLessonsByCourseIdAsync(Guid courseId)

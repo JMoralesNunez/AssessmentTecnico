@@ -16,6 +16,12 @@ public class CourseDbContext : IdentityDbContext<IdentityUser>, IUnitOfWork
     public DbSet<Lesson> Lessons { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
+    public async Task<IDbTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        var transaction = await Database.BeginTransactionAsync(cancellationToken);
+        return new EfDbTransaction(transaction);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -26,5 +32,20 @@ public class CourseDbContext : IdentityDbContext<IdentityUser>, IUnitOfWork
         // Global query filter for soft delete
         modelBuilder.Entity<Course>().HasQueryFilter(c => !c.IsDeleted);
         modelBuilder.Entity<Lesson>().HasQueryFilter(l => !l.IsDeleted);
+    }
+
+    private class EfDbTransaction : IDbTransaction
+    {
+        private readonly Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction _transaction;
+
+        public EfDbTransaction(Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction)
+        {
+            _transaction = transaction;
+        }
+
+        public Task CommitAsync(CancellationToken cancellationToken = default) => _transaction.CommitAsync(cancellationToken);
+        public Task RollbackAsync(CancellationToken cancellationToken = default) => _transaction.RollbackAsync(cancellationToken);
+
+        public ValueTask DisposeAsync() => _transaction.DisposeAsync();
     }
 }

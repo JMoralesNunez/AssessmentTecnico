@@ -23,9 +23,9 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
         builder.Property(l => l.UpdatedAt)
             .IsRequired();
 
-        // Unique constraint: Order must be unique within a Course
-        builder.HasIndex(l => new { l.CourseId, l.Order })
+        // Unique constraint: Order must be unique within a Course for active/deleted combinations
+        builder.HasIndex(l => new { l.CourseId, l.Order, l.IsDeleted })
             .IsUnique()
-            .HasDatabaseName("IX_Lesson_CourseId_Order");
+            .HasDatabaseName("IX_Lesson_CourseId_Order_IsDeleted");
     }
 }
